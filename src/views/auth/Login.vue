@@ -1,0 +1,87 @@
+<script setup>
+import { useAuthStore } from '@/stores/auth'
+import { storeToRefs } from 'pinia';
+import { ref } from 'vue'
+
+const authStore = useAuthStore()
+const { loading, error } = storeToRefs(authStore)
+const { login } = authStore
+
+const form = ref({
+  email: '',
+  password: '',
+  // remember: false,
+})
+
+const handleSubmit = async () => {
+  await login(form.value)
+
+  if (error.value === 'Unauthorized') {
+    alert('Login gagal: Email atau password salah')
+  }
+  // else if (error.value) {
+  //   alert('Login gagal: ' + error.value)
+  // } else {
+  //   alert('Login berhasil!')
+  // }
+}
+
+</script>
+
+
+<template>
+  <form class="space-y-6" @submit.prevent="handleSubmit">
+      <!-- Email -->
+      <div>
+          <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+          <div class="mt-1 relative">
+              <input v-model="form.email" type="email" id="email" name="email" required
+                  class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  placeholder="nama@perusahaan.com">
+              <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <i data-feather="mail" class="w-4 h-4 text-gray-400"></i>
+              </div>
+          </div>
+      </div>
+
+      <!-- Password -->
+      <div>
+          <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+          <div class="mt-1 relative">
+              <input v-model="form.password" type="password" id="password" name="password" required
+                  class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  placeholder="••••••••">
+              <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                  <button type="button" onclick="togglePassword()"
+                      class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                      <i data-feather="eye" class="w-4 h-4" id="password-toggle"></i>
+                  </button>
+              </div>
+          </div>
+      </div>
+
+      <!-- Remember Me & Forgot Password -->
+      <div class="flex items-center justify-between">
+          <div class="flex items-center">
+              <input type="checkbox" id="remember" name="remember"
+                  class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+              <label for="remember" class="ml-2 block text-sm text-gray-700">Ingat saya</label>
+          </div>
+          <a href="#" class="text-sm text-blue-600 hover:text-blue-800">Lupa password?</a>
+      </div>
+
+      <!-- Submit Button -->
+      <div>
+          <button type="submit"
+              class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+              <span v-if="!loading">
+                  Masuk
+              </span>
+              <span v-else>
+                  Loading...
+              </span>
+          </button>
+      </div>
+  </form>
+
+</template>
