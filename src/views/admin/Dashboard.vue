@@ -1,5 +1,6 @@
 <script setup>
-import { onMounted, watch } from 'vue'
+import { onMounted, ref, watch, nextTick } from 'vue'
+
 import Chart from 'chart.js/auto'
 import { useDashboardStore } from '@/stores/dashboard'
 import { useTicketStore } from '@/stores/ticket'
@@ -19,8 +20,17 @@ const { tickets } = storeToRefs(ticketStore)
 const { fetchTickets } = ticketStore
 
 // create toggleTicketMenu function
-const toggleTicketMenu = (button) => {
-  ticket.showMenu = !ticket.showMenu
+const activeMenu = ref(null)
+
+const toggleTicketMenu = async (ticketId) => {
+  activeMenu.value =
+    activeMenu.value === ticketId
+      ? null
+      : ticketId
+
+  await nextTick()
+
+  feather.replace()
 }
 
 // create chart variable and watch effect
@@ -28,14 +38,18 @@ let chart = null
 
 watch(statistic, () => {
   if (statistic.value && chart) {
+
     chart.data.datasets[0].data = [
       statistic.value.status_distribution?.open,
-      statistic.value.status_distribution?.onProgress,
+      statistic.value.status_distribution?.onprogress,
       statistic.value.status_distribution?.resolved,
       statistic.value.status_distribution?.rejected
     ]
+
     chart.update()
   }
+
+  console.log(statistic.value.status_distribution)
 }, { deep: true })
 
 // implement onMounted lifecycle hook
@@ -59,7 +73,7 @@ onMounted(async () => {
         datasets: [{
           data: [
             statistic.value.status_distribution?.open,
-            statistic.value.status_distribution?.onProgress,
+            statistic.value.status_distribution?.onprogress,
             statistic.value.status_distribution?.resolved,
             statistic.value.status_distribution?.rejected
           ],
@@ -78,6 +92,7 @@ onMounted(async () => {
   }
 
   feather.replace()
+  console.log(tickets.value)
 })
 
 
@@ -176,173 +191,67 @@ onMounted(async () => {
           </div>
 
           <div class="divide-y divide-gray-100">
-              <!-- Ticket Item 1 -->
-              <div
-                v-for="ticket in tickets"
-                :key="ticket.code"
-                class="p-4 hover:bg-gray-50"
-              >
-                <div class="flex items-center justify-between">
-                  <div>
-                    <h4 class="text-sm font-medium text-gray-800">
-                      {{ ticket.title }}
-                    </h4>
 
-                    <p class="text-xs text-gray-500 mt-1">
-                      #{{ ticket.code }}
-                    </p>
+            <!-- Ticket Item -->
+            <div
+              v-for="ticket in tickets"
+              :key="ticket.code"
+              class="p-4 hover:bg-gray-50"
+            >
+              <div class="flex items-center justify-between">
+                <div>
+                  <h4 class="text-sm font-medium text-gray-800">
+                    {{ ticket.title }}
+                  </h4>
 
-                    <div class="flex items-center mt-2 space-x-2">
-                      <span
-                        class="px-2 py-1 text-xs font-medium rounded-full"
-                      >
-                        {{ ticket.status }}
-                      </span>
+                  <p class="text-xs text-gray-500 mt-1">
+                    #{{ ticket.code }}
+                  </p>
 
-                      <span class="text-xs text-gray-500">
-                        {{ ticket.created_at }}
-                      </span>
-                    </div>
+                  <div class="flex items-center mt-2 space-x-2">
+                    <span
+                      class="px-2 py-1 text-xs font-medium rounded-full" :class="{
+                        'text-blue-700 bg-blue-100' : ticket.status === 'open',
+                        'text-yellow-700 bg-yellow-100' : ticket.status === 'onProgress',
+                        'text-green-700 bg-green-100' : ticket.status === 'resolved',
+                        'text-red-700 bg-red-100' : ticket.status === 'rejected',
+                      }"
+                    >
+                      {{ capitalize(ticket.status) }}
+                    </span>
+
+                    <span class="text-xs text-gray-500">
+                      {{ DateTime.fromISO(ticket.created_at).setLocale('id').toRelative() }}
+                    </span>
                   </div>
+                </div>
 
-                  <div class="relative">
-                    <button
-                      @click="toggleTicketMenu(ticket)"
-                      class="text-gray-400 hover:text-gray-600"
-                    >
-                      <i data-feather="more-vertical" class="w-5 h-5"></i>
-                    </button>
+                <div class="relative">
+                  <button
+                    @click="toggleTicketMenu(ticket.id)"
+                    class="text-gray-400 hover:text-gray-600"
+                  >
+                    <i data-feather="more-vertical" class="w-5 h-5"></i>
+                  </button>
 
-                    <div
-                      v-if="ticket.showMenu"
-                      class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50"
+                  <div
+                    v-if="activeMenu === ticket.id"
+                    class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50"
+                  >
+                    <RouterLink :to="{ name: 'admin.ticket.detail', params: {code: ticket.code}}"
+                      class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                     >
-                      <router-link
-                        :to="{ name: 'admin.ticket.detail', params: { code: ticket.code } }"
-                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                      >
-                        Lihat Detail
-                      </router-link>
-                    </div>
+                      <i
+                        data-feather="eye"
+                        class="w-4 h-4 inline-block mr-2 text-gray-500"
+                      ></i>
+                      Lihat Detail
+                    </RouterLink>
                   </div>
                 </div>
               </div>
+            </div>
 
-              <div class="p-4 hover:bg-gray-50">
-                  <div class="flex items-center justify-between">
-                      <div>
-                          <h4 class="text-sm font-medium text-gray-800">Gangguan Jaringan WiFi</h4>
-                          <p class="text-xs text-gray-500 mt-1">#TKT-2024-001</p>
-                          <div class="flex items-center mt-2 space-x-2">
-                              <span
-                                  class="px-2 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-full">Open</span>
-                              <span class="text-xs text-gray-500">2 jam yang lalu</span>
-                          </div>
-                      </div>
-                      <div class="relative">
-                          <button onclick="toggleTicketMenu(this)"
-                              class="text-gray-400 hover:text-gray-600">
-                              <i data-feather="more-vertical" class="w-5 h-5"></i>
-                          </button>
-                          <div id="ticketMenu"
-                              class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50">
-                              <a href="answers.html"
-                                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                  <i data-feather="eye" class="w-4 h-4 inline-block mr-2"></i>
-                                  Lihat Detail
-                              </a>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-
-              <!-- Ticket Item 2 -->
-              <div class="p-4 hover:bg-gray-50">
-                  <div class="flex items-center justify-between">
-                      <div>
-                          <h4 class="text-sm font-medium text-gray-800">Printer Tidak Berfungsi</h4>
-                          <p class="text-xs text-gray-500 mt-1">#TKT-2024-002</p>
-                          <div class="flex items-center mt-2 space-x-2">
-                              <span
-                                  class="px-2 py-1 text-xs font-medium text-yellow-700 bg-yellow-100 rounded-full">On
-                                  Progress</span>
-                              <span class="text-xs text-gray-500">5 jam yang lalu</span>
-                          </div>
-                      </div>
-                      <div class="relative">
-                          <button onclick="toggleTicketMenu(this)"
-                              class="text-gray-400 hover:text-gray-600">
-                              <i data-feather="more-vertical" class="w-5 h-5"></i>
-                          </button>
-                          <div id="ticketMenu"
-                              class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50">
-                              <a href="answers.html"
-                                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                  <i data-feather="eye" class="w-4 h-4 inline-block mr-2"></i>
-                                  Lihat Detail
-                              </a>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-
-              <!-- Ticket Item 3 -->
-              <div class="p-4 hover:bg-gray-50">
-                  <div class="flex items-center justify-between">
-                      <div>
-                          <h4 class="text-sm font-medium text-gray-800">Software Update</h4>
-                          <p class="text-xs text-gray-500 mt-1">#TKT-2024-003</p>
-                          <div class="flex items-center mt-2 space-x-2">
-                              <span
-                                  class="px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full">Resolved</span>
-                              <span class="text-xs text-gray-500">1 hari yang lalu</span>
-                          </div>
-                      </div>
-                      <div class="relative">
-                          <button onclick="toggleTicketMenu(this)"
-                              class="text-gray-400 hover:text-gray-600">
-                              <i data-feather="more-vertical" class="w-5 h-5"></i>
-                          </button>
-                          <div id="ticketMenu"
-                              class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50">
-                              <a href="answers.html"
-                                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                  <i data-feather="eye" class="w-4 h-4 inline-block mr-2"></i>
-                                  Lihat Detail
-                              </a>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-
-              <!-- Ticket Item 4 -->
-              <div class="p-4 hover:bg-gray-50">
-                  <div class="flex items-center justify-between">
-                      <div>
-                          <h4 class="text-sm font-medium text-gray-800">Request Akses Sistem</h4>
-                          <p class="text-xs text-gray-500 mt-1">#TKT-2024-004</p>
-                          <div class="flex items-center mt-2 space-x-2">
-                              <span
-                                  class="px-2 py-1 text-xs font-medium text-red-700 bg-red-100 rounded-full">Rejected</span>
-                              <span class="text-xs text-gray-500">2 hari yang lalu</span>
-                          </div>
-                      </div>
-                      <div class="relative">
-                          <button onclick="toggleTicketMenu(this)"
-                              class="text-gray-400 hover:text-gray-600">
-                              <i data-feather="more-vertical" class="w-5 h-5"></i>
-                          </button>
-                          <div id="ticketMenu"
-                              class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50">
-                              <a href="answers.html"
-                                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                  <i data-feather="eye" class="w-4 h-4 inline-block mr-2"></i>
-                                  Lihat Detail
-                              </a>
-                          </div>
-                      </div>
-                  </div>
-              </div>
           </div>
       </div>
 

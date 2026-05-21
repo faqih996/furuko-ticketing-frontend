@@ -19,22 +19,31 @@ const handleLogout = async () => {
       </h1>
     </div>
     <nav class="mt-6">
+
       <RouterLink
         :to="{ name: 'admin.dashboard' }"
-        class="flex items-center px-6 py-3 text-gray-700 bg-blue-50 border-l-4 border-blue-600"
-        :class="{ 'bg-blue-50 border-l-4 border-blue-600': $route.name === 'admin.dashboard' }"
+        class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50 hover:border-l-4 hover:border-gray-200"
+        :class="{
+          'bg-blue-50 border-l-4 border-blue-600 text-gray-700':
+            $route.name === 'admin.dashboard'
+        }"
       >
         <i data-feather="home" class="w-5 h-5 mr-3"></i>
         Dashboard
       </RouterLink>
+
       <RouterLink
         :to="{ name: 'admin.ticket' }"
         class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50 hover:border-l-4 hover:border-gray-200"
-        :class="{ 'bg-blue-50 border-l-4 border-blue-600': $route.name === 'admin.ticket' }"
+        :class="{
+          'bg-blue-50 border-l-4 border-blue-600 text-gray-700':
+            $route.name === 'admin.ticket'
+        }"
       >
         <i data-feather="tag" class="w-5 h-5 mr-3"></i>
         Tiket
       </RouterLink>
+
       <a
         @click="handleLogout"
         class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50 hover:border-l-4 hover:border-gray-200 mt-6"

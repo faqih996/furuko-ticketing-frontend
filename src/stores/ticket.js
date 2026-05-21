@@ -39,11 +39,13 @@ export const useTicketStore = defineStore('ticket', {
   }),
 
   actions: {
-    async fetchTickets() {
+    async fetchTickets(params = {}) {
       this.loading = true
 
       try {
-        const response = await axiosInstance.get('/ticket')
+        const response = await axiosInstance.get('/ticket', {
+      params
+    })
 
         this.tickets = response.data.data
       } catch (error) {
