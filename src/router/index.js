@@ -26,8 +26,8 @@ const router = createRouter({
           component: AppDashboard,
           meta: {
             requiresAuth: true,
-            title: 'Dashboard',
-          },
+            title: 'Dashboard'
+          }
         },
         {
           path: 'ticket',
@@ -35,8 +35,8 @@ const router = createRouter({
           component: AppTicketList,
           meta: {
             requiresAuth: true,
-            title: 'Tickets',
-          },
+            title: 'Tickets'
+          }
         },
         {
           path: 'ticket/:code',
@@ -44,15 +44,15 @@ const router = createRouter({
           component: AppTicketDetail,
           meta: {
             requiresAuth: true,
-            title: 'Ticket Detail',
-          },
+            title: 'Ticket Detail'
+          }
         },
         {
           path: 'ticket/create',
           name: 'app.ticket.create',
-          component: AppTicketCreate,
-        },
-      ],
+          component: AppTicketCreate
+        }
+      ]
     },
     {
       path: '/admin',
@@ -64,8 +64,8 @@ const router = createRouter({
           component: Dashboard,
           meta: {
             requiresAuth: true,
-            title: 'Dashboard',
-          },
+            title: 'Dashboard'
+          }
         },
         {
           path: 'ticket',
@@ -73,8 +73,8 @@ const router = createRouter({
           component: TicketList,
           meta: {
             requiresAuth: true,
-            title: 'Tickets',
-          },
+            title: 'Tickets'
+          }
         },
         {
           path: 'ticket/:code',
@@ -82,10 +82,10 @@ const router = createRouter({
           component: TicketDetail,
           meta: {
             requiresAuth: true,
-            title: 'Ticket Detail',
-          },
-        },
-      ],
+            title: 'Ticket Detail'
+          }
+        }
+      ]
     },
     {
       path: '/auth',
@@ -96,20 +96,20 @@ const router = createRouter({
           name: 'login',
           component: Login,
           meta: {
-            title: 'Login',
-          },
+            title: 'Login'
+          }
         },
         {
           path: 'register',
           name: 'register',
           component: Register,
           meta: {
-            title: 'Register',
-          },
-        },
-      ],
-    },
-  ],
+            title: 'Register'
+          }
+        }
+      ]
+    }
+  ]
 })
 
 // router.beforeEach(async (to, from, next) => {

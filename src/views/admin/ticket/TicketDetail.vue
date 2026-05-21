@@ -46,6 +46,17 @@ onMounted(async () => {
 </script>
 
 <template>
+  <!-- Back Button -->
+  <div class="mb-6">
+    <RouterLink
+      :to="{ name: 'admin.dashboard' }"
+      class="inline-flex items-center text-sm text-gray-600 hover:text-gray-800"
+    >
+      <i data-feather="arrow-left" class="w-4 h-4 mr-2"></i>
+      Kembali ke Daftar Tiket
+    </RouterLink>
+  </div>
+
   <!-- Content -->
   <div class="p-6">
     <!-- Ticket Info -->
