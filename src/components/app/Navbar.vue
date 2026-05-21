@@ -30,7 +30,7 @@ onMounted(() => {
         <div class="flex items-center">
           <RouterLink :to="{ name: 'app.dashboard' }" class="flex items-center">
             <i data-feather="activity" class="w-8 h-8 text-blue-600"></i>
-            <span class="ml-2 text-xl font-bold text-blue-600"> Furuko Team </span>
+            <span class="ml-2 text-xl font-bold text-blue-600">WifiWarga</span>
           </RouterLink>
         </div>
 

@@ -14,7 +14,7 @@ const handleLogout = async () => {
     <div class="p-6 border-b border-gray-100">
       <h1 class="text-2xl font-bold text-blue-600 flex items-center">
         <i data-feather="activity" class="w-8 h-8 mr-2"></i>
-        FurukoTeam
+        WifiWarga
       </h1>
     </div>
     <nav class="mt-6">
