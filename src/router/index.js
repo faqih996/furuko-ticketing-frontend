@@ -93,20 +93,52 @@ const router = createRouter({
       children: [
         {
           path: 'login',
-          name: 'auth.login',
+          name: 'login',
           component: Login,
+          meta: {
+            title: 'Login',
+          },
         },
         {
           path: 'register',
-          name: 'auth.register',
+          name: 'register',
           component: Register,
+          meta: {
+            title: 'Register',
+          },
         },
       ],
     },
   ],
 })
 
-router.beforeEach(async (to, from, next) => {
+// router.beforeEach(async (to, from, next) => {
+//   const authStore = useAuthStore()
+
+//   if (to.meta.requiresAuth) {
+//     if (authStore.token) {
+//       try {
+//         if (!authStore.user) {
+//           await authStore.checkAuth()
+//         }
+
+//         next()
+//       } catch (error) {
+//         next({ name: 'login' })
+//       }
+//     } else {
+//       next({ name: 'login' })
+//     }
+//   } else if (to.meta.requiresUnauth && authStore.token) {
+//     next({ name: 'dashboard' })
+//   } else {
+//     next()
+//   }
+// })
+
+// export default router
+
+router.beforeEach(async (to, from) => {
   const authStore = useAuthStore()
 
   if (to.meta.requiresAuth) {
@@ -116,18 +148,20 @@ router.beforeEach(async (to, from, next) => {
           await authStore.checkAuth()
         }
 
-        next()
+        return true
       } catch (error) {
-        next({ name: 'login' })
+        return { name: 'login' }
       }
     } else {
-      next({ name: 'login' })
+      return { name: 'login' }
     }
-  } else if (to.meta.requiresUnauth && authStore.token) {
-    next({ name: 'dashboard' })
-  } else {
-    next()
   }
+
+  if (to.meta.requiresUnauth && authStore.token) {
+    return { name: 'dashboard' }
+  }
+
+  return true
 })
 
 export default router

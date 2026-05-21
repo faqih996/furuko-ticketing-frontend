@@ -17,6 +17,7 @@ const handleSubmit = async () => {
   await login(form.value)
 
   if (error.value === 'Unauthorized') {
+    form.value.password = null
     alert('Login gagal: Email atau password salah')
   }
   // else if (error.value) {
@@ -30,6 +31,10 @@ const handleSubmit = async () => {
 
 
 <template>
+  <!-- <p v-if="errorMessage" class="text-red-500">
+    {{ errorMessage }}
+  </p> -->
+
   <form class="space-y-6" @submit.prevent="handleSubmit">
       <!-- Email -->
       <div>

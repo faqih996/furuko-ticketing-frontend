@@ -1,3 +1,15 @@
+<script setup>
+import { useAuthStore } from '@/stores/auth';
+
+const authStore = useAuthStore();
+const { logout } = authStore;
+
+const handleLogout = async () => {
+  await logout();
+};
+</script>
+
+
 <template>
   <aside class="w-64 bg-white shadow-lg">
     <div class="p-6 border-b border-gray-100">
@@ -24,7 +36,7 @@
         Tiket
       </RouterLink>
       <a
-        href="#"
+        @click="handleLogout"
         class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50 hover:border-l-4 hover:border-gray-200 mt-6"
       >
         <i data-feather="log-out" class="w-5 h-5 mr-3"></i>
