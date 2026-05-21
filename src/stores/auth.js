@@ -1,20 +1,20 @@
-import { defineStore } from "pinia";
-import { axiosInstance } from "@/plugins/axios";
-import { handleError } from "@/helpers/errorHelper";
-import router from "@/router";
-import Cookies from "js-cookie";
+import { defineStore } from 'pinia'
+import { axiosInstance } from '@/plugins/axios'
+import { handleError } from '@/helpers/errorHelper'
+import router from '@/router'
+import Cookies from 'js-cookie'
 
-export const useAuthStore = defineStore("auth", {
+export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null,
     loading: false,
     error: null,
-    success: null,
+    success: null
   }),
 
   getters: {
     token: () => Cookies.get('token'),
-    isAuthenticated: (state) => !!state.user,
+    isAuthenticated: (state) => !!state.user
   },
 
   actions: {
@@ -39,7 +39,27 @@ export const useAuthStore = defineStore("auth", {
         } else {
           await router.push({ name: 'app.dashboard' })
         }
+      } catch (error) {
+        console.log(error)
 
+        this.error = handleError(error)
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async register(credentials) {
+      this.loading = true
+
+      try {
+        const response = await axiosInstance.post('/register', credentials)
+        this.success = response.data.message
+
+        const token = response.data.data.token
+
+        Cookies.set('token', token)
+
+        router.push({ name: 'app.dashboard' })
       } catch (error) {
         console.log(error)
 
@@ -72,9 +92,6 @@ export const useAuthStore = defineStore("auth", {
       }
     },
 
-    async register() { },
-
-    async checkAuth() { }
+    async checkAuth() {}
   }
-
-});
+})

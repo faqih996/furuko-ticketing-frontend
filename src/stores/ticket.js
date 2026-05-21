@@ -1,41 +1,14 @@
-import { defineStore } from "pinia";
-import { axiosInstance } from "@/plugins/axios";
-import { handleError } from "@/helpers/errorHelper";
-import router from "@/router";
-
-// export const useTicketStore = defineStore("ticket", {
-//   state: () => ({
-//     tickets: [],
-//     loading: false,
-//     error: null,
-//     success: null,
-//   }),
-
-//   actions: {
-//     // async fetchTickets(params)
-//     async fetchTickets() {
-//       this.loading = true
-
-//       try {
-//         const response = await axiosInstance.get(`ticket`, {params})
-//         // const response = await axiosInstance.get('/ticket')
-
-//         this.ticket = response.data.data
-//       } catch (error) {
-//         this.error = handleError(error)
-//       } finally {
-//         this.loading = false
-//       }
-//     }
-//   }
-// })
+import { defineStore } from 'pinia'
+import { axiosInstance } from '@/plugins/axios'
+import { handleError } from '@/helpers/errorHelper'
+import router from '@/router'
 
 export const useTicketStore = defineStore('ticket', {
   state: () => ({
     tickets: [],
     loading: false,
     error: null,
-    success: null,
+    success: null
   }),
 
   actions: {
@@ -44,8 +17,8 @@ export const useTicketStore = defineStore('ticket', {
 
       try {
         const response = await axiosInstance.get('/ticket', {
-      params
-    })
+          params
+        })
 
         this.tickets = response.data.data
       } catch (error) {
@@ -54,5 +27,37 @@ export const useTicketStore = defineStore('ticket', {
         this.loading = false
       }
     },
-  },
+
+    async fetchTicket(code) {
+      this.loading = true
+
+      try {
+        const response = await axiosInstance.get(`/ticket/${code}`)
+
+        return response.data.data
+      } catch (error) {
+        this.error = handleError(error)
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async createTicket(payload) {},
+
+    async createTicketReply(code, payload) {
+      this.loading = true
+
+      try {
+        const response = await axiosInstance.post(`/ticket-reply/${code}`, payload)
+
+        this.success = response.data.message
+
+        return response.data.data
+      } catch (error) {
+        this.error = handleError(error)
+      } finally {
+        this.loading = false
+      }
+    }
+  }
 })
